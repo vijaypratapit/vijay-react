@@ -1,31 +1,51 @@
 /** @format */
-import React from "react";
+
+import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
-const heading = React.createElement("div", { id: "parent", key: "chlid-1" }, [
-  React.createElement("div", { id: "child", key: 1 }, [
-    React.createElement(
-      "h1",
-      { key: "c1-h1" },
-      "this is 1st h1 tag in side child",
-    ),
-    React.createElement(
-      "h2",
-      { key: "c1-h2" },
-      "this is 1st h2 tag in side child",
-    ),
-  ]),
-  React.createElement("div", { id: "child2", key: "chlid-12" }, [
-    React.createElement(
-      "h1",
-      { key: "c2-h1" },
-      "this is 1st h1 tag in side child2",
-    ),
-    React.createElement(
-      "h2",
-      { key: "c2-h2" },
-      "this is 1st h2 tag in side child2",
-    ),
-  ]),
+import Header from "./src/component/Header/Header";
+import Body from "./src/component/Body/Body";
+import { Provider } from "react-redux";
+import Contact from "./src/component/Contact/Contact.js";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import appStore from "./src/utils/appStore.js";
+
+const About = lazy(() => import("./src/component/About/About"));
+
+const AppLayout = () => {
+  return (
+    <Provider store={appStore}>
+      <div className='Container'>
+        <Header />
+        <Outlet />
+      </div>
+    </Provider>
+  );
+};
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <AppLayout />,
+
+    children: [
+      {
+        path: "/",
+        element: <Body />,
+      },
+      {
+        path: "/about",
+        element: (
+          <Suspense fallback='Lodding......'>
+            <About />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/contact",
+        element: <Contact />,
+      },
+    ],
+  },
 ]);
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(heading);
+root.render(<RouterProvider router={router} />);
